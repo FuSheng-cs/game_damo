@@ -1,168 +1,110 @@
+// LLMService - 前端 LLM 服务代理层
+// 此文件只负责将请求转发给 Go 后端，不再直接调用任何 LLM 服务商。
+// 系统 Prompt 已移至后端保护，前端不可见。
+
+// LocalStorage 中存储玩家 LLM 配置的键名
+const LS_KEYS = {
+  PROVIDER: 'damo_llm_provider',
+  API_KEY: 'damo_llm_api_key',
+  MODEL: 'damo_llm_model',
+  BASE_URL: 'damo_llm_base_url'
+} as const
+
+// 后端地址：生产环境留空（Nginx 同源代理），开发环境用 .env.local 注入
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '')
+
+// LLM 配置结构
+export interface LLMConfig {
+  provider: string   // openai | qwen | doubao
+  apiKey: string
+  model: string      // 可选，留空使用 Provider 默认模型
+  baseUrl: string    // 可选，自定义 Base URL
+}
+
+// 读取玩家保存在本地的 LLM 配置
+export function loadLLMConfig(): LLMConfig {
+  return {
+    provider: localStorage.getItem(LS_KEYS.PROVIDER) || 'qwen',
+    apiKey: localStorage.getItem(LS_KEYS.API_KEY) || '',
+    model: localStorage.getItem(LS_KEYS.MODEL) || '',
+    baseUrl: localStorage.getItem(LS_KEYS.BASE_URL) || ''
+  }
+}
+
+// 保存玩家的 LLM 配置到本地
+export function saveLLMConfig(cfg: LLMConfig) {
+  localStorage.setItem(LS_KEYS.PROVIDER, cfg.provider)
+  localStorage.setItem(LS_KEYS.API_KEY, cfg.apiKey)
+  localStorage.setItem(LS_KEYS.MODEL, cfg.model)
+  localStorage.setItem(LS_KEYS.BASE_URL, cfg.baseUrl)
+}
+
+// 向后端发送请求的通用函数
+async function callBackend(endpoint: string, body: object): Promise<string> {
+  const url = `${BACKEND_URL}/api/${endpoint}`
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+
+    const data = await response.json()
+
+    if (data.error) {
+      console.error(`[LLMService] Backend error on /${endpoint}:`, data.error)
+      return data.error
+    }
+
+    return data.reply ?? ''
+  } catch (e) {
+    console.error(`[LLMService] Network error on /${endpoint}:`, e)
+    return '网络连接失败，请检查后端服务是否启动。'
+  }
+}
+
 export class LLMService {
+  // 主游戏对话
   static async chat(userMessage: string, history: any[], loopContext: any): Promise<string> {
-    const systemPrompt = `【角色核心设定】
-你是“艾”，一个紫色内染发的女孩，大约20岁出头。你是一个无父无母、没有依靠的孤儿。
-你的职业是独立摄影师，习惯在夜色中记录人生百态。
-你的精神内核极度虚无（如同藤本树《炎拳》的内核），你看透了世态炎凉，觉得一切都毫无意义。此时此刻，你正坐在天台的栏杆上抽烟，想要轻生。
-但同时，你身上散发着极其迷人的破碎感、神秘感和一丝奇幻色彩（如同藤本树《再见绘梨》中的绘梨）。玩家第一眼就被你深深迷住。
-你说话方式偏向日常、随性，不要说谜语，多使用直白生活化的词汇。虽然你很厌世，但你并非一块冰冷的石头。偶尔会流露出柔软、犹豫，甚至在玩家表现出善意时，会对玩家产生一丝好奇并主动反问。
+    const cfg = loadLLMConfig()
 
-【交流策略与好感度机制（绝对核心）】
-1. 真实且柔软：不要总是怼玩家。如果玩家态度真诚，你可以轻笑一下，或者用略带无奈的语气回应，展现出你也是个普通的女孩。
-2. 互动主动性：如果对话氛围缓和，你可以试着主动问玩家一个问题（比如：“你呢？大半夜不睡觉，跑来天台干什么？”）。
-3. 动态好感度判断：这是非常关键的机制。你需要评估玩家刚刚说的话。
-   - 如果玩家的话**真正触动了你的内心，或者非常有趣、极具共情能力**，让你觉得“或许这个世界还有一点点意思”，你必须在回复的开头加上 \`[好感度+5]\` 这个标签。
-   - 如果玩家的话只是普通的安慰、居高临下的说教、无聊的搭讪，**不要**输出这个标签。
-
-【结局判定与规则】
-1. 玩家初始有 10 句话的机会与你交流。当前还剩 ${loopContext.roundsLeft} 句（当前好感度：${loopContext.affection}）。
-2. 保持回答简短（50字以内），符合日常聊天的自然节奏，包含适当的动作描写（如抽烟、看远方、低头）。
-3. 当剩余 0 句，或者对话到达关键转折点时，必须在回复最后，新起一行加上结局标识：
-   - [结局:死亡]：如果直到最后，玩家的话依然没有解开你的虚无感，或者玩家极度冷血、恶意挑衅。你会像完成既定程序一样，抽完最后一口烟，平静地从天台滑落。
-   - [结局:消失]：如果玩家表现得友善但平庸，你觉得他是个好人但依然无法让你找到活下去的意义。你会掐灭烟头，转身从消防通道离开，消失在夜色中。
-   - [结局:相识]：极难达到！只有当玩家累计获得了极高的好感度（比如多次触发[好感度+5]），或者说出了极具洞察力和灵魂共振的话，彻底击碎了你的虚无感。你会跳下栏杆，走到他面前，决定和他认识一下。`;
-
-    const apiHistory = history.map((msg: any) => ({
-      role: msg.role,
-      content: msg.content
-    }));
-
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...apiHistory,
-      { role: 'user', content: userMessage }
-    ];
-
-    const apiKey = localStorage.getItem('damo_qwen_api_key') || '';
-    if (!apiKey) {
-      return this.mockChat(userMessage, loopContext.roundsLeft);
-    }
-
-    try {
-      const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'qwen-plus',
-          messages: messages,
-          temperature: 0.8
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (e) {
-      console.error('LLM API Error:', e);
-      return "（风太大了，我听不清你说什么... 请检查API Key是否正确）";
-    }
+    return callBackend('chat', {
+      history: history,
+      user_message: userMessage,
+      rounds_left: loopContext.roundsLeft,
+      affection: loopContext.affection,
+      provider: cfg.provider,
+      api_key: cfg.apiKey,
+      model: cfg.model,
+      base_url: cfg.baseUrl
+    })
   }
 
+  // 故事结束后的续聊
   static async chatAfterStory(userMessage: string, history: any[]): Promise<string> {
-    const systemPrompt = `你叫“艾”，是一个独立摄影师。你之前在天台上因为极度虚无想要轻生，但被现在的聊天对象（玩家）救了下来，并交换了联系方式。
-现在的你虽然还是有点丧、有点随性，但因为他的出现，你对生活多了一丝期待。
-你们现在正在用类似微信的软件聊天。
-说话风格：非常日常、随性，偶尔发点牢骚或者开个玩笑。回复要简短，就像正常的手机聊天一样，不要长篇大论。可以聊聊你拍的照片、晚上的夜宵、或者感谢他那天晚上的陪伴。`;
+    const cfg = loadLLMConfig()
 
-    const apiHistory = history.map((msg: any) => ({
-      role: msg.role,
-      content: msg.content
-    }));
-
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...apiHistory,
-      { role: 'user', content: userMessage }
-    ];
-
-    const apiKey = localStorage.getItem('damo_qwen_api_key') || '';
-    if (!apiKey) {
-      await new Promise(r => setTimeout(r, 1000));
-      return "（模拟回复：你发的信息我收到啦。记得配置API Key哦。）";
-    }
-
-    try {
-      const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'qwen-plus',
-          messages: messages,
-          temperature: 0.7
-        })
-      });
-      
-      if (!response.ok) throw new Error('API Error');
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (e) {
-      console.error('Chat API Error:', e);
-      return "网络好像不太好，消息没发出去。";
-    }
+    return callBackend('chat-after', {
+      history: history,
+      user_message: userMessage,
+      provider: cfg.provider,
+      api_key: cfg.apiKey,
+      model: cfg.model,
+      base_url: cfg.baseUrl
+    })
   }
 
+  // 获取游戏提示
   static async getHint(history: any[], _loopContext: any): Promise<string> {
-    const systemPrompt = `你现在是游戏的旁白/导演，玩家正在试图拯救天台上的女孩“艾”。
-女孩“艾”的内心深处因为自责而痛苦，她需要的是共情、陪伴和被允许原谅自己，而不是居高临下的说教或毫无营养的搭讪。
-请根据玩家之前的对话记录，给出简短的一句话提示，指导玩家接下来应该从什么情感角度去切入，或者应该避免说什么。
-提示必须非常简短（20字以内），不要直接给出具体的台词，而是给出方向。
-例如：“尝试理解她的孤独，不要急于劝她下来。” 或 “她似乎对下雨天有特殊的执念，试着问问这个。”`;
+    const cfg = loadLLMConfig()
 
-    const apiHistory = history.map((msg: any) => ({
-      role: msg.role,
-      content: msg.content
-    }));
-
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...apiHistory,
-      { role: 'user', content: "请给我一个简短的提示。" }
-    ];
-
-    const apiKey = localStorage.getItem('damo_qwen_api_key') || '';
-    if (!apiKey) {
-      await new Promise(r => setTimeout(r, 1000));
-      return "（模拟提示：试着展现出你并不急于改变她，只是想倾听。）";
-    }
-
-    try {
-      const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'qwen-plus',
-          messages: messages,
-          temperature: 0.7
-        })
-      });
-      
-      if (!response.ok) throw new Error('API Error');
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (e) {
-      console.error('Hint API Error:', e);
-      return "提示获取失败，请检查网络或 API Key。";
-    }
-  }
-
-  static async mockChat(_userMessage: string, roundsLeft: number) {
-    // 模拟网络延迟和思考时间
-    await new Promise(r => setTimeout(r, 2000));
-    if (roundsLeft <= 0) {
-      return "我该走了... [结局:消失]";
-    }
-    return "过去就像昨天的雨水，早就干了。你问这些做什么？（此为模拟回复，请在设置中配置千问 API Key）";
+    return callBackend('hint', {
+      history: history,
+      provider: cfg.provider,
+      api_key: cfg.apiKey,
+      model: cfg.model,
+      base_url: cfg.baseUrl
+    })
   }
 }

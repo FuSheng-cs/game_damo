@@ -1,11 +1,11 @@
-<template>
+﻿<template>
   <div class="start-view min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden">
     <!-- Mock Background -->
     <div class="absolute inset-0 bg-gradient-to-b from-gray-900 to-black z-0"></div>
     
     <div class="z-10 text-center relative w-full max-w-4xl px-4">
       <h1 class="text-6xl font-pixel text-purple-400 mb-6 tracking-wider drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]">DAMO</h1>
-      <p class="text-gray-400 mb-12 text-lg italic">“你只有 10 句话的时间。但也许，我们都需要更多的时间来原谅自己。”</p>
+      <p class="text-gray-400 mb-12 text-lg italic">"你只有 10 句话的时间。但也许，我们都需要更多的时间来原谅自己。"</p>
       
       <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
         <!-- Main Actions -->
@@ -20,13 +20,13 @@
         <div class="w-full md:w-96 bg-gray-800/50 p-6 rounded-lg border border-gray-700 backdrop-blur-sm text-left">
           <h2 class="text-xl font-pixel text-purple-300 mb-4 border-b border-gray-600 pb-2">关于游戏</h2>
           <div class="text-gray-300 text-sm space-y-3 leading-relaxed">
-            <p>在这个霓虹闪烁的深夜，你来到了天台。坐在围栏边缘的是“艾”——一个极度厌世、带着颓废破碎感的女孩。</p>
+            <p>在这个霓虹闪烁的深夜，你来到了天台。坐在围栏边缘的是"艾"——一个极度厌世、带着颓废破碎感的女孩。</p>
             <p><strong>目标：</strong>你只有 <span class="text-red-400 font-bold">10 句话</span> 的机会与她交谈。试着走进她的内心，把她从边缘拉回来。</p>
             <p><strong>注意：</strong></p>
             <ul class="list-disc pl-5 text-gray-400 space-y-1">
               <li>倾听大于说教，普通的套话只会让她离你远去。</li>
               <li>你的每一次尝试都会在她的潜意识中留下痕迹。</li>
-              <li>在“游戏设置”中配置 <span class="text-purple-400">千问 API Key</span> 以获得完整的 AI 对话体验。</li>
+              <li>在"游戏设置"中配置 <span class="text-purple-400">AI API Key</span> 以获得完整的 AI 对话体验（支持 千问/豆包/OpenAI）。</li>
             </ul>
           </div>
         </div>
