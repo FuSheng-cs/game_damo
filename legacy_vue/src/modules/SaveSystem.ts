@@ -1,0 +1,81 @@
+import CRC32 from 'crc-32'
+import { useGameStore } from '@/store/gameStore'
+
+const SAVE_KEY_PREFIX = 'damo_save_'
+
+export interface SaveSlot {
+  id: number;
+  timestamp: number;
+  data: string; // Base64 encoded JSON + CRC32
+}
+
+export class SaveSystem {
+  static save(slotId: number): boolean {
+    try {
+      const gameStore = useGameStore()
+      const stateToSave = {
+        roundCount: gameStore.roundCount,
+        hintCount: gameStore.hintCount,
+        messages: [...gameStore.messages],
+        isEnding: gameStore.isEnding,
+        endingType: gameStore.endingType
+      }
+      
+      const jsonStr = JSON.stringify(stateToSave)
+      const checksum = CRC32.str(jsonStr)
+      const payload = {
+        state: stateToSave,
+        checksum
+      }
+      
+      const base64Data = btoa(encodeURIComponent(JSON.stringify(payload)))
+      
+      const slot: SaveSlot = {
+        id: slotId,
+        timestamp: Date.now(),
+        data: base64Data
+      }
+      
+      localStorage.setItem(`${SAVE_KEY_PREFIX}${slotId}`, JSON.stringify(slot))
+      return true
+    } catch (e) {
+      console.error('Failed to save game:', e)
+      return false
+    }
+  }
+
+  static load(slotId: number): boolean {
+    try {
+      const slotStr = localStorage.getItem(`${SAVE_KEY_PREFIX}${slotId}`)
+      if (!slotStr) return false
+      
+      const slot: SaveSlot = JSON.parse(slotStr)
+      const jsonStr = decodeURIComponent(atob(slot.data))
+      const payload = JSON.parse(jsonStr)
+      
+      const currentChecksum = CRC32.str(JSON.stringify(payload.state))
+      if (currentChecksum !== payload.checksum) {
+        console.error('Save file corrupted: Checksum mismatch')
+        return false
+      }
+      
+      const gameStore = useGameStore()
+      gameStore.loadState(payload.state)
+      return true
+    } catch (e) {
+      console.error('Failed to load game:', e)
+      return false
+    }
+  }
+
+  static getSlots(): SaveSlot[] {
+    const slots: SaveSlot[] = []
+    for (let i = 1; i <= 3; i++) { // Support 3 slots
+      const slotStr = localStorage.getItem(`${SAVE_KEY_PREFIX}${i}`)
+      if (slotStr) {
+        slots.push(JSON.parse(slotStr))
+      }
+    }
+    return slots
+  }
+}

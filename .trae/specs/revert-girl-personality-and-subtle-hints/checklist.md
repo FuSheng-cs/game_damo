@@ -1,0 +1,4 @@
+- [x] `LLMService.ts` prompt is updated and no longer instructs the AI to act like a ghost or simulation data.
+- [x] `LLMService.ts` prompt instructs the AI to express loop memory only as subtle Deja Vu, dreams, or vague emotions.
+- [x] `docs/prompts_and_settings.md` matches the new prompt.
+- [x] `docs/storyline_and_lore.md` has been adjusted to remove overt 4th-wall breaking text.
