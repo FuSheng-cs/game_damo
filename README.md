@@ -4,8 +4,6 @@
 
 [![Go](https://img.shields.io/badge/Backend-Go%201.22-00ADD8?logo=go)](https://go.dev/)
 [![Vue](https://img.shields.io/badge/Frontend-Vue%203-4FC08D?logo=vue.js)](https://vuejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-purple)](LICENSE)
-
 ---
 
 ## 📖 关于游戏
