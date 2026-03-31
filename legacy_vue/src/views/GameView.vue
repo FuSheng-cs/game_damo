@@ -13,7 +13,7 @@
     <!-- Character layer removed since the new images are full-scene compositions -->
 
     <!-- Top UI -->
-    <div class="absolute top-0 left-0 right-0 z-30 p-4 flex justify-between items-start pointer-events-auto">
+    <div class="absolute top-0 left-0 right-0 z-30 p-6 flex justify-between items-start pointer-events-auto">
       <div class="flex gap-4">
         <div class="w-48 bg-black/50 p-2 rounded backdrop-blur-sm border border-gray-700">
           <div class="text-sm text-gray-300 mb-1 flex justify-between">
@@ -23,18 +23,18 @@
           <ProgressBar :value="gameStore.roundCount" :max="10" color="#ef4444" />
         </div>
         
-        <div v-if="gameStore.hintCount > 0 && !gameStore.isEnding" class="bg-black/50 p-2 rounded backdrop-blur-sm border border-purple-900/50 flex items-center">
+        <div v-if="gameStore.hintCount > 0 && !gameStore.isEnding" class="bg-[#0a0515]/90 px-4 py-2 rounded-xl border border-gray-800 shadow-lg backdrop-blur-md flex items-center">
           <button 
             @click="handleHint" 
             :disabled="gameStore.isWaiting"
-            class="text-sm text-purple-300 hover:text-purple-200 disabled:opacity-50 flex items-center gap-1 transition-colors"
+            class="text-sm text-yellow-500 hover:text-yellow-400 font-bold disabled:opacity-50 flex items-center gap-2 transition-colors"
           >
             <span class="text-lg">💡</span> 寻找线索 ({{ gameStore.hintCount }})
           </button>
         </div>
       </div>
       
-      <div class="flex gap-2">
+      <div class="flex gap-3">
         <button @click="saveGame" class="bg-gray-800/80 hover:bg-gray-700 px-3 py-1.5 rounded text-sm border border-gray-600 backdrop-blur-sm transition-colors">保存</button>
         <button @click="goHome" class="bg-gray-800/80 hover:bg-gray-700 px-3 py-1.5 rounded text-sm border border-gray-600 backdrop-blur-sm transition-colors">退出</button>
       </div>
@@ -45,12 +45,12 @@
       <div class="max-w-4xl mx-auto">
         <div class="bg-black/60 border border-gray-700/50 rounded-xl p-6 shadow-2xl backdrop-blur-md min-h-[160px] flex flex-col justify-end transition-all duration-500">
           
-          <div v-if="gameStore.isWaiting" class="italic text-gray-400 text-lg md:text-xl py-4">
+          <div v-if="gameStore.isWaiting" class="italic text-gray-500 text-base md:text-lg py-4">
             <TypewriterText :text="gameStore.waitingText" />
           </div>
           
-          <div v-else-if="latestHint" class="text-lg md:text-xl leading-relaxed text-yellow-100/90 mb-4 bg-yellow-900/20 p-4 rounded border border-yellow-700/30">
-            <div class="font-pixel text-yellow-500 text-sm mb-2 flex justify-between">
+          <div v-else-if="latestHint" class="text-base md:text-lg leading-relaxed text-yellow-100/90 mb-6 bg-yellow-900/20 p-4 rounded-xl border border-yellow-700/30">
+            <div class="font-bold text-yellow-500 text-sm mb-2 flex justify-between">
               <span>【内心直觉】</span>
               <button @click="clearHint" class="text-gray-500 hover:text-white">✕</button>
             </div>

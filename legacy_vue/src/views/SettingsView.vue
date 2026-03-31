@@ -1,7 +1,11 @@
 <template>
-  <div class="settings-view min-h-screen bg-gray-900 p-8">
-    <div class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
-      <h2 class="text-3xl font-pixel text-purple-400 mb-8">设置 (Settings)</h2>
+  <div class="settings-view min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900 via-gray-950 to-black p-8 relative overflow-hidden">
+    <!-- Subtle Background Element -->
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+    
+    <div class="max-w-2xl mx-auto bg-gray-900/70 p-8 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-gray-700/50 backdrop-blur-xl relative z-10">
+      <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-8 tracking-wide">设置 (Settings)</h2>
       
       <div class="space-y-8">
 
@@ -144,7 +148,7 @@
       </div>
       
       <div class="mt-10 flex justify-end">
-        <button @click="goBack" class="py-2 px-6 bg-gray-700 hover:bg-gray-600 rounded transition-colors">返回</button>
+        <button @click="goBack" class="py-2.5 px-8 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 rounded-xl transition-all duration-300 shadow-lg text-white font-medium hover:-translate-y-0.5">返回</button>
       </div>
     </div>
   </div>
