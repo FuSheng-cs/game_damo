@@ -120,10 +120,7 @@
             <input type="range" min="0" max="1" step="0.1" v-model.number="settings.sfxVolume" @change="updateSettings" class="w-1/2">
           </div>
           
-          <div class="flex items-center justify-between">
-            <label class="text-gray-300">文字音效音量</label>
-            <input type="range" min="0" max="1" step="0.1" v-model.number="settings.textVolume" @change="updateSettings" class="w-1/2">
-          </div>
+
         </div>
 
         <!-- 显示 -->

@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { audioManager } from '@/modules/AudioManager'
 
 const props = defineProps<{
   text: string;
@@ -27,7 +26,6 @@ const startTyping = () => {
   displayedText.value = ''
   currentIndex = 0
   isTyping.value = true
-  audioManager.startTypewriter()
   
   timer = setInterval(() => {
     if (currentIndex < props.text.length) {
@@ -44,7 +42,6 @@ const stopTyping = () => {
     clearInterval(timer)
     timer = null
   }
-  audioManager.stopTypewriter()
 }
 
 const completeTyping = () => {

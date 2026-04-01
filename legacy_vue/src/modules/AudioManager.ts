@@ -17,9 +17,9 @@ class AudioManager {
       volume: settingsStore.sfxVolume
     })
     this.sfxMap['typewriter'] = new Howl({
-      src: ['/assets/audio/ui_typewriter.wav'],
+      src: ['/assets/audio/typing_click.mp3'],
       volume: settingsStore.textVolume,
-      loop: true
+      loop: false  // 单声效果，每字触发一次
     })
   }
 
@@ -50,19 +50,18 @@ class AudioManager {
     }
   }
 
-  startTypewriter() {
+  // 每输出一个字符调用一次，播放单次打字音效
+  playTypingTick() {
     const settingsStore = useSettingsStore()
-    if (this.sfxMap['typewriter'] && !this.sfxMap['typewriter'].playing()) {
+    if (this.sfxMap['typewriter']) {
       this.sfxMap['typewriter'].volume(settingsStore.textVolume)
       this.sfxMap['typewriter'].play()
     }
   }
 
-  stopTypewriter() {
-    if (this.sfxMap['typewriter']) {
-      this.sfxMap['typewriter'].stop()
-    }
-  }
+  // 保留空方法以兼容旧调用（TypewriterText 组件用 start/stop 包裹）
+  startTypewriter() {}
+  stopTypewriter() {}
 
   updateVolumes() {
     const settingsStore = useSettingsStore()

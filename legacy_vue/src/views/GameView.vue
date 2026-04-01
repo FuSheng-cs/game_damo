@@ -185,6 +185,6 @@ const goToChatAfter = () => {
 
 onMounted(() => {
   AchievementTracker.unlock('first_try')
-  audioManager.playBgm('/assets/audio/bgm_rooftop.ogg')
+  audioManager.playBgm('/assets/audio/bgm_rooftop.mp3')
 })
 </script>
