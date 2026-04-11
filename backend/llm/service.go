@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -90,7 +91,21 @@ func callLLM(cfg ClientConfig, messages []Message, temperature float64) (string,
 		}
 	}
 
-	endpoint := strings.TrimRight(baseURL, "/") + "/chat/completions"
+	// 智能处理 BaseURL：
+	// 许多中转 API 用户只填写了域名（如 https://example.com），
+	// 但 OpenAI 兼容格式要求 /v1/chat/completions。
+	// 如果 baseURL 不以版本路径结尾（如 /v1, /v2 等），自动补上 /v1。
+	trimmed := strings.TrimRight(baseURL, "/")
+	// 检查是否已经包含版本路径（如 /v1, /v2, /v3, /compatible-mode/v1 等）
+	parts := strings.Split(trimmed, "/")
+	lastPart := parts[len(parts)-1]
+	hasVersion := len(lastPart) >= 2 && lastPart[0] == 'v' && lastPart[1] >= '0' && lastPart[1] <= '9'
+	if !hasVersion {
+		trimmed = trimmed + "/v1"
+	}
+
+	endpoint := trimmed + "/chat/completions"
+	log.Printf("[LLM] Calling endpoint: %s (model: %s, provider: %s)", endpoint, model, cfg.Provider)
 
 	reqBody := LLMRequest{
 		Model:       model,

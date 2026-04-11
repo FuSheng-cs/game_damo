@@ -241,7 +241,10 @@ const testConnection = async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = await res.json()
 
-    if (data.reply && !data.reply.includes('模拟回复') && !data.reply.includes('失败')) {
+    // 优先检查 error 字段，这是后端明确返回的错误
+    if (data.error) {
+      testResult.value = { ok: false, msg: `⚠ ${data.error}` }
+    } else if (data.reply && !data.reply.includes('模拟回复')) {
       testResult.value = { ok: true, msg: '✓ 连接成功！AI 响应正常' }
     } else {
       testResult.value = { ok: false, msg: '⚠ 请检查 API Key 是否正确' }

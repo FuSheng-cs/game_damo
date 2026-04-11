@@ -133,6 +133,7 @@ func HandleChat(c *gin.Context) {
 	if err != nil {
 		log.Printf("[HandleChat] LLM error: %v", err)
 		c.JSON(http.StatusOK, ChatResponse{
+			Error: "LLM 调用失败: " + err.Error(),
 			Reply: "（风太大了，我听不清你说什么... 请检查 API Key 或网络连接）",
 		})
 		return
@@ -163,6 +164,7 @@ func HandleHint(c *gin.Context) {
 	if err != nil {
 		log.Printf("[HandleHint] LLM error: %v", err)
 		c.JSON(http.StatusOK, ChatResponse{
+			Error: "提示获取失败: " + err.Error(),
 			Reply: "提示获取失败，请检查网络或 API Key。",
 		})
 		return
@@ -193,6 +195,7 @@ func HandleChatAfter(c *gin.Context) {
 	if err != nil {
 		log.Printf("[HandleChatAfter] LLM error: %v", err)
 		c.JSON(http.StatusOK, ChatResponse{
+			Error: "聊天失败: " + err.Error(),
 			Reply: "网络好像不太好，消息没发出去。",
 		})
 		return

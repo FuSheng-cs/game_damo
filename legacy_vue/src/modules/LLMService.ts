@@ -54,7 +54,8 @@ async function callBackend(endpoint: string, body: object): Promise<string> {
 
     if (data.error) {
       console.error(`[LLMService] Backend error on /${endpoint}:`, data.error)
-      return data.error
+      // 返回用户友好的回复文本（如果后端提供了），否则返回错误信息
+      return data.reply || data.error
     }
 
     return data.reply ?? ''
