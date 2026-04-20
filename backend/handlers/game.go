@@ -75,15 +75,13 @@ func buildClientConfig(provider, apiKey, model, baseURL string) (llm.ClientConfi
 	// 如果玩家没有提供 API Key，尝试使用服务器配置的 Key
 	if strings.TrimSpace(cfg.APIKey) == "" {
 		if config.Cfg.ServerAPIKey != "" {
-			cfg.APIKey = config.Cfg.ServerAPIKey
-			if cfg.Provider == "" {
-				cfg.Provider = config.Cfg.ServerProvider
-			}
-			if cfg.Model == "" {
-				cfg.Model = config.Cfg.ServerModel
-			}
-			if cfg.BaseURL == "" {
-				cfg.BaseURL = config.Cfg.ServerBaseURL
+			// 当玩家未提供自己的 Key 时，完整切换到服务器侧配置，
+			// 避免前端残留的 provider/model/baseURL 与服务端 Key 不匹配。
+			cfg = llm.ClientConfig{
+				Provider: config.Cfg.ServerProvider,
+				APIKey:   config.Cfg.ServerAPIKey,
+				Model:    config.Cfg.ServerModel,
+				BaseURL:  config.Cfg.ServerBaseURL,
 			}
 		} else {
 			// 没有任何 API Key 可用
