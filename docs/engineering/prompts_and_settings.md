@@ -1,6 +1,6 @@
 # DAMO 游戏 Prompt 与设定说明
 
-本文档记录了游戏中驱动“艾”进行互动的千问大模型（Qwen）的核心提示词（System Prompts）以及相关的机制设定。
+本文档记录了游戏中驱动“艾”进行互动的大模型的核心提示词（System Prompts）以及相关的机制设定。
 
 ## 1. 对话主线 Prompt (`LLMService.chat`)
 
