@@ -1,102 +1,95 @@
 <template>
-  <div class="start-view min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden font-sans">
-    <!-- Background Image with slow pan -->
-    <div 
-      class="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 animate-slow-pan z-0"
-      style="background-image: url('/assets/images/bg_rooftop_night_1920.webp');"
-    ></div>
-    
-    <!-- Overlay Gradient for text readability -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/95 z-0 pointer-events-none"></div>
+  <main class="start-view" aria-labelledby="start-title">
+    <div class="menu-bg" aria-hidden="true"></div>
+    <div class="character-layer" aria-hidden="true"></div>
+    <div class="rain-layer" aria-hidden="true"></div>
+    <div class="menu-shade" aria-hidden="true"></div>
+    <div class="purple-haze" aria-hidden="true"></div>
 
-    <!-- Rain VFX layer -->
-    <div class="absolute inset-0 bg-[url('/assets/images/vfx_rain_sprite.webp')] opacity-20 mix-blend-screen pointer-events-none z-0 bg-repeat animation-rain"></div>
-    
-    <div class="z-10 relative w-full max-w-6xl px-6 flex flex-col md:flex-row items-center justify-between gap-12 mt-8 md:mt-16">
-      
-      <!-- Left Column: Title and Intro -->
-      <div class="flex-1 text-left flex flex-col items-center md:items-start text-center md:text-left">
-        <h1 class="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-purple-100 to-purple-500 mb-6 tracking-widest title-glow" style="font-family: 'STZhongsong', 'SimSun', serif;">
-          天台十句
-        </h1>
-        <div class="h-1 w-24 bg-purple-500 mb-8 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)] hidden md:block"></div>
-        <p class="text-gray-300 mb-10 text-lg md:text-2xl font-light italic leading-relaxed text-shadow-sm">
-          "你只有 10 句话的时间。<br/>
-          <span class="text-purple-300 font-medium">但也许，我们都需要更多的时间来原谅自己。</span>"
-        </p>
-
-        <!-- Game Intro Panel -->
-        <div class="w-full max-w-lg bg-black/40 p-6 md:p-8 rounded-2xl border border-purple-500/30 backdrop-blur-md text-left shadow-2xl transition-all duration-500 hover:border-purple-400/60 hover:bg-black/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.25)]">
-          <h2 class="text-xl font-bold text-purple-300 mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            关于游戏
-          </h2>
-          <div class="text-gray-300 text-sm md:text-base space-y-4 leading-relaxed">
-            <p>在这个霓虹闪烁的深夜，你来到了天台。坐在围栏边缘的是"艾"——一个极度厌世、带着颓废破碎感的女孩。</p>
-            <p><strong>你的目标：</strong>你只有 <span class="text-purple-400 font-bold text-lg">10 句话</span> 的机会与她交谈。试着走进她的内心，把她从边缘拉回来。</p>
-            <ul class="list-none space-y-2 mt-3 text-gray-400 bg-black/20 p-4 rounded-xl border border-white/5">
-              <li class="flex items-start gap-3">
-                <span class="text-purple-500 mt-1 text-xs">◆</span> 
-                <span>倾听大于说教，普通的套话只会让她离你远去。</span>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class="text-purple-500 mt-1 text-xs">◆</span> 
-                <span>你的每一次尝试都会在她的潜意识中留下痕迹。</span>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class="text-purple-500 mt-1 text-xs">◆</span> 
-                <span>建议在设置中配置 <strong class="text-purple-300 mx-1">千问 API Key</strong> 以获得完整 AI 对话体验（支持千问/豆包/OpenAI）。</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Main Actions -->
-      <div class="flex flex-col gap-5 w-full max-w-xs shrink-0 mt-8 md:mt-0">
-        <button @click="startGame" class="btn-glass primary-btn group">
-          <span class="relative z-10 flex items-center justify-center gap-2 text-xl font-bold tracking-[0.2em]">
-            开始游戏
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:translate-x-1.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+    <section class="menu-shell">
+      <div class="brand-panel">
+        <h1 id="start-title" class="sr-only">天台十句</h1>
+        <img
+          class="title-art"
+          src="/assets/images/menu_title.png"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+        />
+        <p class="tagline">
+          <span class="quote-mark quote-mark-open" aria-hidden="true">“</span>
+          <span class="quote-copy">
+            你只有 <strong>10 句话</strong> 的时间。<br />
+            但也许，我们都需要更多的时间来原谅自己。
           </span>
-          <div class="absolute inset-0 bg-gradient-to-r from-purple-600/80 to-indigo-600/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></div>
-        </button>
-        
-        <button @click="loadGame" class="btn-glass group">
-          <span class="relative z-10 tracking-[0.2em] font-medium text-lg">读取存档</span>
-          <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></div>
-        </button>
-        
-        <button @click="goToAchievements" class="btn-glass group">
-          <span class="relative z-10 tracking-[0.2em] font-medium text-lg">成就图鉴</span>
-          <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></div>
-        </button>
-        
-        <button @click="goToSettings" class="btn-glass group">
-          <span class="relative z-10 tracking-[0.2em] font-medium text-lg">游戏设置</span>
-          <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></div>
-        </button>
+          <span class="quote-mark quote-mark-close" aria-hidden="true">”</span>
+        </p>
       </div>
 
-    </div>
-    
-    <!-- Footer -->
-    <div class="absolute bottom-6 text-xs text-gray-500/70 z-10 tracking-[0.15em] uppercase flex items-center gap-4 font-mono">
+      <article class="intro-card" aria-label="关于游戏">
+        <header class="intro-heading">
+          <Info :size="20" :stroke-width="1.9" aria-hidden="true" />
+          <span>关于游戏</span>
+        </header>
+        <p>
+          在这个霓虹闪烁的深夜，你来到了天台。坐在围栏边缘的女孩名叫艾。
+          她厌倦世界，也厌倦被人用标准答案拯救。
+        </p>
+        <p>
+          你的目标：用有限的十句话靠近她的内心，把她从边缘拉回来。
+        </p>
+        <ul class="intro-list">
+          <li>每一句话都可能改变她的情绪与选择。</li>
+          <li>倾听比说教更重要，敷衍会让她离你更远。</li>
+          <li>不同回应会导向不同结局与后续相遇。</li>
+        </ul>
+      </article>
+
+      <nav class="action-menu" aria-label="主菜单">
+        <button type="button" class="menu-button menu-button-primary" @click="startGame">
+          <Sparkles :size="24" :stroke-width="1.8" aria-hidden="true" />
+          <span>开始游戏</span>
+          <ArrowRight class="arrow-icon" :size="24" :stroke-width="1.8" aria-hidden="true" />
+        </button>
+
+        <button type="button" class="menu-button" @click="loadGame">
+          <FolderOpen :size="23" :stroke-width="1.8" aria-hidden="true" />
+          <span>读取存档</span>
+        </button>
+
+        <button type="button" class="menu-button" @click="goToAchievements">
+          <Trophy :size="23" :stroke-width="1.8" aria-hidden="true" />
+          <span>成就图鉴</span>
+        </button>
+
+        <button type="button" class="menu-button" @click="goToSettings">
+          <Settings :size="23" :stroke-width="1.8" aria-hidden="true" />
+          <span>游戏设置</span>
+        </button>
+      </nav>
+    </section>
+
+    <footer class="menu-footer" aria-label="版本信息">
+      <span class="footer-dot"></span>
       <span>v1.1.0</span>
-      <span class="w-1 h-1 rounded-full bg-gray-500/70"></span>
-      <span>AI-Driven Narrative Experience</span>
-    </div>
-  </div>
+      <span class="footer-line"></span>
+      <span>AI-DRIVEN NARRATIVE EXPERIENCE</span>
+    </footer>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/store/gameStore'
 import { audioManager } from '@/modules/AudioManager'
+import {
+  ArrowRight,
+  FolderOpen,
+  Info,
+  Settings,
+  Sparkles,
+  Trophy
+} from 'lucide-vue-next'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -130,41 +123,595 @@ const goToAchievements = () => {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+.start-view {
+  --menu-violet: #b66cff;
+  --menu-violet-soft: #d8b6ff;
+  --menu-line: rgba(216, 182, 255, 0.42);
+  --menu-panel: rgba(8, 8, 16, 0.58);
+  --menu-panel-strong: rgba(8, 8, 16, 0.72);
+  --menu-text: rgba(245, 241, 255, 0.92);
+  --menu-muted: rgba(224, 219, 235, 0.74);
 
-.title-glow {
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.3), 0 4px 8px rgba(0,0,0,0.8);
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 660px;
+  overflow: hidden;
+  color: var(--menu-text);
+  background: #050508;
+  font-family: "Microsoft YaHei", "Noto Sans SC", "Source Han Sans", sans-serif;
+  isolation: isolate;
 }
 
-.text-shadow-sm {
-  text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+.menu-bg,
+.character-layer,
+.rain-layer,
+.menu-shade,
+.purple-haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.btn-glass {
-  @apply relative overflow-hidden py-4 px-8 bg-black/40 border border-gray-500/30 text-gray-200 rounded-xl transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-[0_8px_25px_rgba(0,0,0,0.5)] hover:border-gray-300/50 hover:-translate-y-1 flex items-center justify-center;
+.menu-bg {
+  z-index: 0;
+  background-image: url('/assets/images/menu_bg_rooftop.png');
+  background-position: center;
+  background-size: cover;
+  filter: saturate(0.9) contrast(1.08) brightness(0.78);
+  transform: scale(1.035);
+  animation: menu-bg-drift 38s ease-in-out infinite;
 }
 
-.primary-btn {
-  @apply bg-purple-900/50 border-purple-500/60 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_35px_rgba(168,85,247,0.6)] hover:border-purple-300;
+.character-layer {
+  z-index: 4;
+  background-image: url('/assets/images/char_girl_smoke.png');
+  background-position: center 52%;
+  background-size: cover;
+  opacity: 0.42;
+  filter: grayscale(0.12) saturate(0.72) contrast(1.08) brightness(0.74);
+  mix-blend-mode: normal;
+  -webkit-mask-image: radial-gradient(
+    ellipse 42% 68% at 58% 55%,
+    black 0%,
+    black 42%,
+    rgba(0, 0, 0, 0.46) 62%,
+    transparent 82%
+  );
+  mask-image: radial-gradient(
+    ellipse 42% 68% at 58% 55%,
+    black 0%,
+    black 42%,
+    rgba(0, 0, 0, 0.46) 62%,
+    transparent 82%
+  );
 }
 
-@keyframes slow-pan {
-  0% { transform: scale(1.05) translate(0, 0); }
-  50% { transform: scale(1.1) translate(-1%, -1%); }
-  100% { transform: scale(1.05) translate(0, 0); }
+.rain-layer {
+  z-index: 2;
+  background-image: url('/assets/images/vfx_rain_sprite.webp');
+  background-repeat: repeat;
+  background-size: 360px 360px;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  animation: rain-fall 1.8s linear infinite;
 }
 
-.animate-slow-pan {
-  animation: slow-pan 40s ease-in-out infinite;
+.menu-shade {
+  z-index: 3;
+  background:
+    linear-gradient(90deg, rgba(3, 3, 8, 0.88) 0%, rgba(7, 7, 14, 0.58) 34%, rgba(3, 3, 8, 0.72) 100%),
+    linear-gradient(180deg, rgba(4, 4, 9, 0.18) 0%, rgba(4, 4, 9, 0.2) 48%, rgba(4, 4, 9, 0.9) 100%);
+}
+
+.purple-haze {
+  z-index: 3;
+  opacity: 0.78;
+  background:
+    radial-gradient(ellipse at 22% 24%, rgba(162, 83, 255, 0.34), transparent 30%),
+    radial-gradient(ellipse at 82% 44%, rgba(157, 85, 255, 0.22), transparent 28%),
+    linear-gradient(180deg, transparent 64%, rgba(22, 10, 32, 0.54) 100%);
+}
+
+.menu-shell {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 50%;
+  width: min(100vw, calc(100svh * 16 / 9));
+  max-width: 1920px;
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  container-type: inline-size;
+}
+
+.brand-panel {
+  position: absolute;
+  left: 10.4%;
+  top: 13.2%;
+  width: 38.8%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.title-art {
+  display: block;
+  width: 37.4cqw;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  user-select: none;
+  filter:
+    drop-shadow(0 0 16px rgba(187, 115, 255, 0.74))
+    drop-shadow(0 0 36px rgba(133, 67, 198, 0.48));
+}
+
+.tagline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.78cqw;
+  width: 31.4cqw;
+  max-width: none;
+  margin: 1.2cqw 0 0 3.6cqw;
+  color: rgba(240, 235, 250, 0.84);
+  font-size: clamp(0.9rem, 1.08cqw, 1.08rem);
+  line-height: 1.68;
+  font-style: italic;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.82);
+}
+
+.tagline strong {
+  color: var(--menu-violet-soft);
+  font-weight: 800;
+  text-shadow: 0 0 16px rgba(182, 108, 255, 0.62);
+}
+
+.quote-mark {
+  flex: 0 0 auto;
+  color: var(--menu-violet);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.55rem, 2.05cqw, 2.2rem);
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 0 14px rgba(182, 108, 255, 0.82);
+}
+
+.quote-mark-open {
+  margin-top: 0.18em;
+}
+
+.quote-mark-close {
+  align-self: flex-end;
+  margin-bottom: -0.08em;
+}
+
+.quote-copy {
+  min-width: 0;
+}
+
+.quote-copy strong {
+  color: var(--menu-violet);
+  filter: drop-shadow(0 0 10px rgba(182, 108, 255, 0.74));
+}
+
+.intro-card {
+  position: absolute;
+  left: 13.9%;
+  top: 46.4%;
+  width: 30.4cqw;
+  max-width: none;
+  padding: 1.5cqw 1.9cqw 1.65cqw;
+  color: var(--menu-muted);
+  background:
+    linear-gradient(180deg, rgba(22, 15, 34, 0.64), rgba(4, 4, 10, 0.64)),
+    rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--menu-line);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 18px 60px rgba(0, 0, 0, 0.42),
+    0 0 36px rgba(151, 78, 230, 0.18);
+  backdrop-filter: blur(9px);
+}
+
+.intro-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.62cqw;
+  margin-bottom: 0.86cqw;
+  color: var(--menu-violet-soft);
+  font-size: clamp(0.9rem, 1.06cqw, 1.05rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.intro-card p {
+  margin: 0 0 0.76cqw;
+  font-size: clamp(0.84rem, 0.92cqw, 0.96rem);
+  line-height: 1.76;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+
+.intro-list {
+  display: grid;
+  gap: 0.5cqw;
+  margin: 1cqw 0 0;
+  padding: 0.96cqw 0 0;
+  border-top: 1px dashed rgba(216, 182, 255, 0.24);
+  list-style: none;
+}
+
+.intro-list li {
+  position: relative;
+  padding-left: 1.45cqw;
+  font-size: clamp(0.78rem, 0.84cqw, 0.88rem);
+  line-height: 1.62;
+  color: rgba(231, 226, 240, 0.74);
+}
+
+.intro-list li::before {
+  content: "";
+  position: absolute;
+  left: 0.12cqw;
+  top: 0.68em;
+  width: 0.42cqw;
+  height: 0.42cqw;
+  border: 1px solid var(--menu-violet);
+  transform: rotate(45deg);
+  box-shadow: 0 0 10px rgba(182, 108, 255, 0.76);
+}
+
+.action-menu {
+  position: absolute;
+  left: 65.2%;
+  top: 38.2%;
+  width: 22.9cqw;
+  display: grid;
+  gap: 1.05cqw;
+}
+
+.menu-button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2cqw 1fr 2cqw;
+  align-items: center;
+  min-height: 4.8cqw;
+  padding: 0 1.5cqw;
+  overflow: hidden;
+  color: rgba(247, 243, 255, 0.88);
+  background:
+    linear-gradient(180deg, rgba(16, 15, 22, 0.74), rgba(5, 5, 10, 0.74)),
+    rgba(0, 0, 0, 0.36);
+  border: 1px solid rgba(220, 207, 242, 0.32);
+  border-radius: 8px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 14px 32px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.menu-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(90deg, rgba(182, 108, 255, 0.28), rgba(255, 255, 255, 0.04));
+  transition: opacity 180ms ease;
+}
+
+.menu-button svg,
+.menu-button span {
+  position: relative;
+  z-index: 1;
+}
+
+.menu-button svg {
+  color: var(--menu-violet-soft);
+}
+
+.menu-button span {
+  justify-self: center;
+  font-size: clamp(1rem, 1.36cqw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.menu-button:hover,
+.menu-button:focus-visible {
+  color: #fff;
+  border-color: rgba(229, 205, 255, 0.78);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 0 0 1px rgba(182, 108, 255, 0.28),
+    0 0 34px rgba(182, 108, 255, 0.28),
+    0 18px 42px rgba(0, 0, 0, 0.46);
+  transform: translateY(-2px);
+}
+
+.menu-button:hover::before,
+.menu-button:focus-visible::before {
+  opacity: 1;
+}
+
+.menu-button:focus-visible {
+  outline: 2px solid rgba(229, 205, 255, 0.82);
+  outline-offset: 3px;
+}
+
+.menu-button-primary {
+  min-height: 5.2cqw;
+  color: #fff;
+  background:
+    linear-gradient(90deg, rgba(115, 45, 177, 0.52), rgba(25, 19, 38, 0.7)),
+    var(--menu-panel-strong);
+  border-color: rgba(198, 126, 255, 0.86);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 0 0 1px rgba(182, 108, 255, 0.2),
+    0 0 26px rgba(182, 108, 255, 0.44),
+    0 18px 48px rgba(0, 0, 0, 0.5);
+}
+
+.menu-button-primary span {
+  font-size: clamp(1.08rem, 1.52cqw, 1.48rem);
+}
+
+.arrow-icon {
+  justify-self: end;
+  transition: transform 180ms ease;
+}
+
+.menu-button-primary:hover .arrow-icon,
+.menu-button-primary:focus-visible .arrow-icon {
+  transform: translateX(5px);
+}
+
+.menu-footer {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(540px, calc(100% - 48px));
+  transform: translateX(-50%);
+  color: rgba(222, 214, 234, 0.44);
+  font-family: "Consolas", "Cascadia Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
+.footer-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--menu-violet);
+  transform: rotate(45deg);
+  box-shadow: 0 0 12px rgba(182, 108, 255, 0.84);
+}
+
+.footer-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(216, 182, 255, 0.34), transparent);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes menu-bg-drift {
+  0% {
+    transform: scale(1.035) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.07) translate(-0.8%, -0.5%);
+  }
+  100% {
+    transform: scale(1.035) translate(0, 0);
+  }
 }
 
 @keyframes rain-fall {
-  0% { background-position: 0 0; }
-  100% { background-position: 20% 100%; }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 90px 360px;
+  }
 }
 
-.animation-rain {
-  animation: rain-fall 2s linear infinite;
-  background-size: 400px 400px;
+@media (max-width: 980px) {
+  .start-view {
+    min-height: 100svh;
+    overflow-y: auto;
+  }
+
+  .menu-bg {
+    background-position: center;
+  }
+
+  .character-layer {
+    opacity: 0.28;
+    background-position: center;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 70%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 70%, transparent 100%);
+  }
+
+  .menu-shade {
+    background:
+      linear-gradient(180deg, rgba(3, 3, 8, 0.78) 0%, rgba(3, 3, 8, 0.56) 42%, rgba(3, 3, 8, 0.94) 100%),
+      linear-gradient(90deg, rgba(3, 3, 8, 0.76), rgba(3, 3, 8, 0.58));
+  }
+
+  .menu-shell {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 18px;
+    width: min(560px, calc(100% - 32px));
+    max-width: none;
+    min-height: auto;
+    aspect-ratio: auto;
+    transform: none;
+    container-type: normal;
+    margin: 0 auto;
+    padding: 26px 0 78px;
+  }
+
+  .brand-panel {
+    position: static;
+    width: 100%;
+    order: 1;
+    align-items: center;
+  }
+
+  .action-menu {
+    position: static;
+    width: 100%;
+    order: 2;
+    gap: 12px;
+  }
+
+  .intro-card {
+    position: static;
+    order: 3;
+    width: 100%;
+    max-width: none;
+    transform: none;
+    padding: 18px 18px 20px;
+  }
+
+  .title-art {
+    width: min(100%, 420px);
+    margin: 0 auto;
+  }
+
+  .tagline {
+    justify-content: center;
+    width: 100%;
+    max-width: 440px;
+    margin: 4px auto 0;
+    font-size: 0.98rem;
+    line-height: 1.75;
+    text-align: left;
+  }
+
+  .quote-mark {
+    font-size: 1.7rem;
+  }
+
+  .intro-heading {
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+
+  .intro-list li {
+    padding-left: 24px;
+  }
+
+  .intro-list li::before {
+    left: 2px;
+    width: 7px;
+    height: 7px;
+  }
+
+  .menu-button,
+  .menu-button-primary {
+    min-height: 62px;
+    grid-template-columns: 30px 1fr 30px;
+    padding: 0 18px;
+  }
+
+  .menu-button span {
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .menu-button-primary span {
+    font-size: 1.08rem;
+  }
+
+  .menu-footer {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    margin: -58px auto 18px;
+    transform: none;
+    justify-content: center;
+    width: calc(100% - 32px);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  .footer-line {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-shell {
+    width: calc(100% - 24px);
+    padding-top: 20px;
+  }
+
+  .title-art {
+    width: min(100%, 340px);
+  }
+
+  .tagline {
+    font-size: 0.9rem;
+  }
+
+  .intro-heading {
+    margin-bottom: 12px;
+  }
+
+  .intro-card p {
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .intro-list {
+    margin-top: 14px;
+  }
+
+  .intro-list li {
+    font-size: 0.84rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-bg,
+  .rain-layer {
+    animation: none;
+  }
+
+  .menu-button,
+  .menu-button::before,
+  .arrow-icon {
+    transition: none;
+  }
 }
 </style>
