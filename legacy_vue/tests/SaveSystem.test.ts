@@ -12,6 +12,7 @@ describe('Save System', () => {
   it('saves and loads state successfully', () => {
     const store = useGameStore()
     store.roundCount = 5
+    store.affection = 15
     
     const success = SaveSystem.save(1)
     expect(success).toBe(true)
@@ -24,6 +25,40 @@ describe('Save System', () => {
     const loadSuccess = SaveSystem.load(1)
     expect(loadSuccess).toBe(true)
     expect(store.roundCount).toBe(5)
+    expect(store.affection).toBe(15)
+  })
+
+  it('does not save while waiting for an async response', () => {
+    const store = useGameStore()
+    store.roundCount = 5
+    store.isWaiting = true
+
+    const success = SaveSystem.save(1)
+
+    expect(success).toBe(false)
+    expect(localStorage.getItem('damo_save_1')).toBeNull()
+  })
+
+  it('supports three independent save slots', () => {
+    const store = useGameStore()
+    store.roundCount = 9
+    expect(SaveSystem.save(1)).toBe(true)
+
+    store.roundCount = 6
+    store.affection = 5
+    expect(SaveSystem.save(2)).toBe(true)
+
+    store.roundCount = 3
+    store.affection = 10
+    expect(SaveSystem.save(3)).toBe(true)
+
+    const slots = SaveSystem.getSlots()
+    expect(slots.map((slot) => slot.id)).toEqual([1, 2, 3])
+
+    store.resetGame()
+    expect(SaveSystem.load(2)).toBe(true)
+    expect(store.roundCount).toBe(6)
+    expect(store.affection).toBe(5)
   })
 
   it('fails to load if data is tampered', () => {

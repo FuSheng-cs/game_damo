@@ -35,8 +35,48 @@
       </div>
       
       <div class="flex gap-3">
-        <button @click="saveGame" class="bg-gray-800/80 hover:bg-gray-700 px-3 py-1.5 rounded text-sm border border-gray-600 backdrop-blur-sm transition-colors">保存</button>
+        <button
+          @click="openSaveSlots"
+          :disabled="gameStore.isWaiting"
+          class="bg-gray-800/80 hover:bg-gray-700 px-3 py-1.5 rounded text-sm border border-gray-600 backdrop-blur-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800/80"
+        >
+          保存
+        </button>
         <button @click="goHome" class="bg-gray-800/80 hover:bg-gray-700 px-3 py-1.5 rounded text-sm border border-gray-600 backdrop-blur-sm transition-colors">退出</button>
+      </div>
+    </div>
+
+    <!-- Save Slots -->
+    <div
+      v-if="showSaveSlots"
+      class="absolute inset-0 z-40 flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm pointer-events-auto"
+      @click.self="closeSaveSlots"
+    >
+      <div class="w-full max-w-sm rounded-lg border border-purple-400/30 bg-[#090711]/95 p-5 shadow-[0_0_32px_rgba(168,85,247,0.22)]">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-base font-bold text-purple-100">选择保存栏位</h2>
+          <button
+            type="button"
+            class="text-xl leading-none text-gray-500 transition-colors hover:text-white"
+            aria-label="关闭"
+            @click="closeSaveSlots"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="grid gap-3">
+          <button
+            v-for="slotId in SAVE_SLOT_IDS"
+            :key="slotId"
+            type="button"
+            class="rounded border border-gray-700 bg-black/45 px-4 py-3 text-left transition-colors hover:border-purple-400/70 hover:bg-purple-950/35"
+            @click="saveToSlot(slotId)"
+          >
+            <span class="block text-sm font-bold text-gray-100">栏位 {{ slotId }}</span>
+            <span class="mt-1 block text-xs text-gray-400">{{ getSlotStatus(slotId) }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -98,22 +138,27 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/store/gameStore'
 import { audioManager } from '@/modules/AudioManager'
-import { SaveSystem } from '@/modules/SaveSystem'
+import { SaveSystem, type SaveSlot } from '@/modules/SaveSystem'
 import { AchievementTracker } from '@/modules/AchievementTracker'
 import TypewriterText from '@/components/TypewriterText.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
+const SAVE_SLOT_IDS = [1, 2, 3] as const
 
 const inputText = ref('')
 const textCompleted = ref(false)
 const latestHint = ref<string | null>(null)
+const showSaveSlots = ref(false)
+const saveSlots = ref<SaveSlot[]>([])
 
 const latestMessage = computed(() => {
   if (gameStore.messages.length === 0) return null
   return gameStore.messages[gameStore.messages.length - 1]
 })
+
+const saveSlotMap = computed(() => new Map(saveSlots.value.map((slot) => [slot.id, slot])))
 
 const currentBg = computed(() => {
   if (gameStore.isEnding) {
@@ -165,12 +210,49 @@ const clearHint = () => {
   textCompleted.value = true // Ensure input shows up immediately after closing hint
 }
 
-const saveGame = () => {
+const formatSaveTime = (timestamp: number) =>
+  new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(timestamp))
+
+const getSlotStatus = (slotId: number) => {
+  const slot = saveSlotMap.value.get(slotId)
+  return slot ? `已有存档：${formatSaveTime(slot.timestamp)}` : '空栏位'
+}
+
+const refreshSaveSlots = () => {
+  saveSlots.value = SaveSystem.getSlots()
+}
+
+const openSaveSlots = () => {
   audioManager.playSfx('click')
-  if (SaveSystem.save(1)) {
-    alert('游戏已保存至栏位 1')
+  if (gameStore.isWaiting) {
+    alert('正在等待回应，暂时不能保存。')
+    return
+  }
+
+  refreshSaveSlots()
+  showSaveSlots.value = true
+}
+
+const closeSaveSlots = () => {
+  showSaveSlots.value = false
+}
+
+const saveToSlot = (slotId: number) => {
+  audioManager.playSfx('click')
+  const existingSlot = saveSlotMap.value.get(slotId)
+  if (existingSlot && !confirm(`栏位 ${slotId} 已有存档，是否覆盖？`)) return
+
+  if (SaveSystem.save(slotId)) {
+    refreshSaveSlots()
+    showSaveSlots.value = false
+    alert(`游戏已保存至栏位 ${slotId}`)
   } else {
-    alert('保存失败')
+    alert(gameStore.isWaiting ? '正在等待回应，暂时不能保存。' : '保存失败')
   }
 }
 

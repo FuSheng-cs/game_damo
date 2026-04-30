@@ -1,4 +1,5 @@
 import CRC32 from 'crc-32'
+import type { Message } from '@/store/gameStore'
 import { useGameStore } from '@/store/gameStore'
 
 const SAVE_KEY_PREFIX = 'damo_save_'
@@ -9,13 +10,25 @@ export interface SaveSlot {
   data: string; // Base64 encoded JSON + CRC32
 }
 
+export interface PersistedGameState {
+  roundCount: number;
+  hintCount: number;
+  affection: number;
+  messages: Message[];
+  isEnding: boolean;
+  endingType: string | null;
+}
+
 export class SaveSystem {
   static save(slotId: number): boolean {
     try {
       const gameStore = useGameStore()
-      const stateToSave = {
+      if (gameStore.isWaiting) return false
+
+      const stateToSave: PersistedGameState = {
         roundCount: gameStore.roundCount,
         hintCount: gameStore.hintCount,
+        affection: gameStore.affection,
         messages: [...gameStore.messages],
         isEnding: gameStore.isEnding,
         endingType: gameStore.endingType

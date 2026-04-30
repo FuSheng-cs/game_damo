@@ -75,13 +75,38 @@
       <span class="footer-line"></span>
       <span>AI-DRIVEN NARRATIVE EXPERIENCE</span>
     </footer>
+
+    <div v-if="showLoadSlots" class="save-slot-overlay" @click.self="closeLoadSlots">
+      <section class="save-slot-panel" aria-label="读取存档">
+        <header class="save-slot-header">
+          <h2>选择读取栏位</h2>
+          <button type="button" aria-label="关闭" @click="closeLoadSlots">×</button>
+        </header>
+
+        <div class="save-slot-list">
+          <button
+            v-for="slotId in SAVE_SLOT_IDS"
+            :key="slotId"
+            type="button"
+            class="save-slot-button"
+            :disabled="!hasLoadSlot(slotId)"
+            @click="loadFromSlot(slotId)"
+          >
+            <span class="save-slot-title">栏位 {{ slotId }}</span>
+            <span class="save-slot-status">{{ getLoadSlotStatus(slotId) }}</span>
+          </button>
+        </div>
+      </section>
+    </div>
   </main>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/store/gameStore'
 import { audioManager } from '@/modules/AudioManager'
+import { SaveSystem, type SaveSlot } from '@/modules/SaveSystem'
 import {
   ArrowRight,
   FolderOpen,
@@ -93,6 +118,12 @@ import {
 
 const router = useRouter()
 const gameStore = useGameStore()
+const SAVE_SLOT_IDS = [1, 2, 3] as const
+
+const showLoadSlots = ref(false)
+const saveSlots = ref<SaveSlot[]>([])
+
+const saveSlotMap = computed(() => new Map(saveSlots.value.map((slot) => [slot.id, slot])))
 
 const startGame = () => {
   audioManager.playSfx('click')
@@ -102,13 +133,43 @@ const startGame = () => {
 
 const loadGame = () => {
   audioManager.playSfx('click')
-  import('@/modules/SaveSystem').then(({ SaveSystem }) => {
-    if (SaveSystem.load(1)) {
-      router.push('/game')
-    } else {
-      alert('未找到有效存档。')
-    }
-  })
+  refreshSaveSlots()
+  showLoadSlots.value = true
+}
+
+const refreshSaveSlots = () => {
+  saveSlots.value = SaveSystem.getSlots()
+}
+
+const formatSaveTime = (timestamp: number) =>
+  new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(timestamp))
+
+const hasLoadSlot = (slotId: number) => saveSlotMap.value.has(slotId)
+
+const getLoadSlotStatus = (slotId: number) => {
+  const slot = saveSlotMap.value.get(slotId)
+  return slot ? `已有存档：${formatSaveTime(slot.timestamp)}` : '空栏位'
+}
+
+const closeLoadSlots = () => {
+  showLoadSlots.value = false
+}
+
+const loadFromSlot = (slotId: number) => {
+  audioManager.playSfx('click')
+  if (!hasLoadSlot(slotId)) return
+
+  if (SaveSystem.load(slotId)) {
+    router.push('/game')
+  } else {
+    alert('未找到有效存档。')
+    refreshSaveSlots()
+  }
 }
 
 const goToSettings = () => {
@@ -504,6 +565,106 @@ const goToAchievements = () => {
   flex: 1;
   height: 1px;
   background: linear-gradient(90deg, rgba(216, 182, 255, 0.34), transparent);
+}
+
+.save-slot-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.save-slot-panel {
+  width: min(380px, 100%);
+  padding: 20px;
+  color: var(--menu-text);
+  background:
+    linear-gradient(180deg, rgba(22, 15, 34, 0.92), rgba(4, 4, 10, 0.94)),
+    rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(216, 182, 255, 0.42);
+  border-radius: 8px;
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.54),
+    0 0 34px rgba(182, 108, 255, 0.22);
+}
+
+.save-slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.save-slot-header h2 {
+  margin: 0;
+  color: var(--menu-violet-soft);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.save-slot-header button {
+  color: rgba(224, 219, 235, 0.62);
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: color 180ms ease;
+}
+
+.save-slot-header button:hover,
+.save-slot-header button:focus-visible {
+  color: #fff;
+}
+
+.save-slot-list {
+  display: grid;
+  gap: 12px;
+}
+
+.save-slot-button {
+  display: block;
+  width: 100%;
+  padding: 13px 16px;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.36);
+  border: 1px solid rgba(220, 207, 242, 0.26);
+  border-radius: 8px;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.save-slot-button:not(:disabled):hover,
+.save-slot-button:not(:disabled):focus-visible {
+  background: rgba(92, 39, 140, 0.36);
+  border-color: rgba(216, 182, 255, 0.78);
+}
+
+.save-slot-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.save-slot-title,
+.save-slot-status {
+  display: block;
+}
+
+.save-slot-title {
+  color: rgba(247, 243, 255, 0.92);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.save-slot-status {
+  margin-top: 4px;
+  color: rgba(224, 219, 235, 0.62);
+  font-size: 0.78rem;
 }
 
 .sr-only {
