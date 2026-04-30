@@ -109,6 +109,7 @@ export const useGameStore = defineStore('game', {
         { role: 'assistant', content: '夜晚的天台，微风吹过。霓虹灯的色彩在她的头发上跳跃。她坐在围栏上，指间的香烟忽明忽暗。你记得她，那个在夜色中游荡的摄影师。' }
       ];
       this.isWaiting = false;
+      this.waitingText = '';
       this.isEnding = false;
       this.endingType = null;
     },
@@ -117,6 +118,8 @@ export const useGameStore = defineStore('game', {
       this.hintCount = state.hintCount ?? 3;
       this.affection = state.affection ?? 0;
       this.messages = state.messages || [];
+      this.isWaiting = false;
+      this.waitingText = '';
       this.isEnding = state.isEnding || false;
       this.endingType = state.endingType || null;
     }
