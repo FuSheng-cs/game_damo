@@ -23,6 +23,15 @@
           <ProgressBar :value="gameStore.roundCount" :max="10" color="#ef4444" />
         </div>
         
+        <!-- 好感度条 -->
+        <div class="w-48 bg-black/50 p-2 rounded backdrop-blur-sm border border-gray-700">
+          <div class="text-sm text-gray-300 mb-1 flex justify-between">
+            <span>心意相通</span>
+            <span>{{ gameStore.affection }}/30</span>
+          </div>
+          <ProgressBar :value="gameStore.affection" :max="30" color="#a855f7" />
+        </div>
+        
         <div v-if="gameStore.hintCount > 0 && !gameStore.isEnding" class="bg-[#0a0515]/90 px-4 py-2 rounded-xl border border-gray-800 shadow-lg backdrop-blur-md flex items-center">
           <button 
             @click="handleHint" 
@@ -98,8 +107,15 @@
           </div>
           
           <div v-else-if="latestMessage" class="text-lg md:text-xl leading-relaxed text-gray-100">
-            <div class="font-pixel text-purple-400 text-lg mb-3">
-              {{ latestMessage.role === 'assistant' ? (gameStore.isEnding ? '旁白' : '神秘女孩') : '你' }}
+            <div class="font-pixel text-purple-400 text-lg mb-3 flex items-center gap-3">
+              <span>{{ latestMessage.role === 'assistant' ? (gameStore.isEnding ? '旁白' : '神秘女孩') : '你' }}</span>
+              
+              <!-- 情绪指示器 -->
+              <transition name="fade" mode="out-in">
+                <span v-if="gameStore.currentEmotion && latestMessage.role === 'assistant'" :class="emotionStyle" class="text-sm px-3 py-0.5 rounded-full animate-pulse">
+                  {{ emotionLabel }}
+                </span>
+              </transition>
             </div>
             <TypewriterText :text="latestMessage.content" @complete="onTextComplete" :key="gameStore.messages.length" />
           </div>
@@ -173,6 +189,27 @@ const currentBg = computed(() => {
   if (gameStore.roundCount > 7) return '/assets/images/char_girl_smoke.png'
   if (gameStore.roundCount > 3) return '/assets/images/char_girl_normal.png'
   return '/assets/images/char_girl_sad.png'
+})
+
+// 情绪标签和样式
+const emotionLabel = computed(() => {
+  switch (gameStore.currentEmotion) {
+    case '刺痛': return '💔 心中一刺'
+    case '惊讶': return '✨ 微微惊讶'
+    case '柔软': return '💕 心中一软'
+    case '好奇': return '🤔 产生好奇'
+    default: return ''
+  }
+})
+
+const emotionStyle = computed(() => {
+  switch (gameStore.currentEmotion) {
+    case '刺痛': return 'bg-red-900/60 text-red-200 border border-red-500/40'
+    case '惊讶': return 'bg-yellow-900/60 text-yellow-200 border border-yellow-500/40'
+    case '柔软': return 'bg-pink-900/60 text-pink-200 border border-pink-500/40'
+    case '好奇': return 'bg-blue-900/60 text-blue-200 border border-blue-500/40'
+    default: return ''
+  }
 })
 
 const onTextComplete = () => {

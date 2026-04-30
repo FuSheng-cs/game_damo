@@ -15,6 +15,7 @@ export interface GameState {
   waitingText: string;
   isEnding: boolean;
   endingType: string | null;
+  currentEmotion: string | null; // 当前情绪标签
 }
 
 const WAITING_TEXTS = [
@@ -36,7 +37,8 @@ export const useGameStore = defineStore('game', {
     isWaiting: false,
     waitingText: '',
     isEnding: false,
-    endingType: null
+    endingType: null,
+    currentEmotion: null
   }),
   actions: {
 
@@ -73,8 +75,17 @@ export const useGameStore = defineStore('game', {
       
       let finalReply = reply;
       
-      // Check for affection boost
-      if (reply.includes('[好感度+5]')) {
+      // Check for emotion tags first - [情绪:xxx]
+      const emotionMatch = finalReply.match(/\[情绪:(刺痛|惊讶|柔软|好奇)\]/);
+      if (emotionMatch) {
+        this.currentEmotion = emotionMatch[1];
+        finalReply = finalReply.replace(/\[情绪:.*?\]/, '').trim();
+      } else {
+        this.currentEmotion = null; // Clear previous emotion if no new one
+      }
+      
+      // Check for affection boost - [好感度+5]
+      if (finalReply.includes('[好感度+5]')) {
         this.affection += 5;
         this.roundCount += 1;
         finalReply = finalReply.replace(/\[好感度\+5\]/g, '').trim();
@@ -112,6 +123,7 @@ export const useGameStore = defineStore('game', {
       this.waitingText = '';
       this.isEnding = false;
       this.endingType = null;
+      this.currentEmotion = null;
     },
     loadState(state: any) {
       this.roundCount = state.roundCount;
@@ -122,6 +134,7 @@ export const useGameStore = defineStore('game', {
       this.waitingText = '';
       this.isEnding = state.isEnding || false;
       this.endingType = state.endingType || null;
+      this.currentEmotion = state.currentEmotion || null;
     }
   }
 })
