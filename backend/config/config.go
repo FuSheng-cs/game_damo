@@ -25,9 +25,10 @@ var Cfg *Config
 
 // Load 从 .env 文件和环境变量中加载配置
 func Load() {
-	// 尝试加载 .env 文件，忽略文件不存在的错误（生产环境直接用环境变量）
-	if err := godotenv.Load(); err != nil {
-		log.Println("[Config] .env file not found, using environment variables only")
+	// 同时尝试加载当前目录和仓库根目录下 backend/.env，
+	// 兼容在 backend/ 目录或项目根目录启动服务两种方式。
+	if err := godotenv.Load(".env", "backend/.env"); err != nil {
+		log.Println("[Config] No .env file found, using environment variables only")
 	}
 
 	Cfg = &Config{

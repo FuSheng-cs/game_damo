@@ -117,7 +117,8 @@ const latestMessage = computed(() => {
 
 const currentBg = computed(() => {
   if (gameStore.isEnding) {
-    if (gameStore.endingType === 'end_death') return '/assets/images/cg_death_falling_16_9.webp'
+    if (gameStore.endingType === 'end_death') return '/assets/images/cg_end_fall.png'
+    if (gameStore.endingType === 'end_disappear') return '/assets/images/cg_end_disappear.png'
     if (gameStore.endingType === 'end_true_release') return '/assets/images/cg_acquaintance_16_9.webp' // Reusing this image for the true ending fade out
     if (gameStore.endingType === 'end_self_deception') return '/assets/images/char_girl_sad.png'
     if (gameStore.endingType === 'end_eternal_cage') return '/assets/images/char_girl_smoke.png'

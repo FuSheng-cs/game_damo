@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-after-story min-h-screen bg-gray-100 flex flex-col">
+  <div class="chat-after-story h-screen min-h-0 bg-gray-100 flex flex-col overflow-hidden">
     <!-- Header -->
     <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
       <button @click="goHome" class="text-gray-600 hover:text-gray-900">
@@ -17,7 +17,7 @@
     </div>
 
     <!-- Chat Messages -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="chatContainer">
+    <div class="chat-scrollbar flex-1 min-h-0 overflow-y-scroll p-4 pr-2 space-y-4" ref="chatContainer">
       <div v-for="(msg, index) in messages" :key="index" class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
         
         <!-- Assistant Avatar -->
@@ -132,5 +132,30 @@ onMounted(() => {
 <style scoped>
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 12px);
+}
+
+.chat-scrollbar {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(7, 193, 96, 0.45) rgba(0, 0, 0, 0.06);
+  overscroll-behavior: contain;
+}
+
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 999px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(7, 193, 96, 0.45);
+  border-radius: 999px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(7, 193, 96, 0.65);
 }
 </style>

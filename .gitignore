@@ -1,0 +1,10 @@
+**/node_modules/
+**/dist/
+.vite/
+.playwright-cli/
+.claude/
+output/
+Rubbish_backup/
+*.log
+.env
+.env.local
